@@ -30,12 +30,12 @@ jobs:
              method: jwt
              path: "jwt"
              #url: "https://${{ secrets.VAULT_ADDR }}"
-             url: "https://vault.k8s.local"    
+             url: "http://vault.k8s.local"    
              #namespace: "${{ secrets.VAULT_NAMESPACE }}"
-             namespace: "root"
+             #namespace: "root"
              role: "another-jwt-role"
              #caCertificate: ${{ secrets.VAULT_CACERT }}
-             tlsSkipVerify: true
+             #tlsSkipVerify: true
              secrets: |
                  mdeey/data/app test | username ;
                  mdeey/data/app test | password ;
