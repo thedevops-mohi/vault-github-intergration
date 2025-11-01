@@ -32,13 +32,13 @@ jobs:
              #url: "https://${{ secrets.VAULT_ADDR }}"
              url: "http://vault.k8s.local"    
              #namespace: "${{ secrets.VAULT_NAMESPACE }}"
-             #namespace: "root"
+             namespace: "root"
              role: "another-jwt-role"
              #caCertificate: ${{ secrets.VAULT_CACERT }}
              #tlsSkipVerify: true
              secrets: |
                  mdeey/data/app test | username ;
-                 mdeey/data/app test | password ;
+                 mdeey/data/app test | password 
 
       - name: Print Secret
         id: token
