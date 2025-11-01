@@ -37,8 +37,8 @@ jobs:
              #caCertificate: ${{ secrets.VAULT_CACERT }}
              #tlsSkipVerify: true
              secrets: |
-                 mdeey/data/app test | username ;
-                 mdeey/data/app test | password 
+                 mdeey/data/app/test username | username ;
+                 mdeey/data/app/test passowrd | password 
 
       - name: Print Secret
         id: token
