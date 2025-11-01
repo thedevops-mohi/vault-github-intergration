@@ -1,4 +1,4 @@
-name: Store Secrets in HashiCorp Vault
+name: Retrieve Secret with Approle
 
 on:
  
