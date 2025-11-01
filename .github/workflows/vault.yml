@@ -38,7 +38,7 @@ jobs:
              #tlsSkipVerify: true
              secrets: |
                  mdeey/data/app/test username | username ;
-                 mdeey/data/app/test passowrd | password 
+                 mdeey/data/app/test password | password 
 
       - name: Print Secret
         id: token
