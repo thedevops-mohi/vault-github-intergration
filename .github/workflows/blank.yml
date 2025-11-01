@@ -1,0 +1,74 @@
+name: Store Secrets in HashiCorp Vault
+
+on:
+ 
+ workflow_dispatch:
+ # push:
+ #   branches:
+ #     - main
+
+permissions: 
+      id-token: write
+      contents: read
+
+jobs:
+  store_secrets:
+    runs-on: [wdc,igtlnapp1]
+    
+    permissions: 
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download Python Code From Github on Runner
+        uses: actions/checkout@v3
+
+      #- name: Download Python Libraries/Dependancies
+      #  run: |
+      #      sudo apt-get update
+      #      curl -L -o vault_1.16.3+ent_linux_amd64.zip https://releases.hashicorp.com/vault/1.16.3+ent/vault_1.16.3+ent_linux_amd64.zip
+      #      unzip vault_1.16.3+ent_linux_amd64.zip
+      #      sudo mv vault /usr/local/bin/
+      
+      - name: Retrieve Secret
+        id: secretdata
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+             method: jwt
+             path: "jwt"
+             #url: "https://${{ secrets.VAULT_ADDR }}"
+             url: "https://hvault-tst.azure.igmfinancial.net"    
+             #namespace: "${{ secrets.VAULT_NAMESPACE }}"
+             namespace: "IGM/IAMOps"
+             role: "iamops-githubactions"
+             #caCertificate: ${{ secrets.VAULT_CACERT }}
+             tlsSkipVerify: true
+             secrets: |
+                 prod/iamops/ApplicationSecurity/data githubactions | username ;
+                 prod/iamops/ApplicationSecurity/data githubactions | password ;
+
+      - name: Print Secret
+        id: token
+        env:
+             USERNAME: ${{ steps.secretdata.outputs.username }}
+             PASSWORD: ${{ steps.secretdata.outputs.password }}
+        run: |
+             echo  $USERNAME >> /tmp/output.txt
+             echo  $PASSWORD >> /tmp/output.txt
+      
+      - name: 'upload artifact output.txt'
+        uses: actions/upload-artifact@v4
+        with:
+          name: output.txt
+          path: /tmp/output.txt
+          retention-days: 90
+      #- name: Download Python Libraries/Dependancies
+      #  env:
+      #      VAULT_ADDR: ${{secrets.VAULT_ADDR}}
+      #      VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
+      #      #VAULT_NAMESPACE: ${{secrets.VAULT_NAMESPACE}}
+      #      #VAULT_CACERT: "ca.pem"
+      #      VAULT_SKIP_VERIFY: true
+      #  run: |
+      #      vault status   
+
