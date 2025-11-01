@@ -1,0 +1,58 @@
+name: Store Secrets in HashiCorp Vault
+
+on:
+ 
+ workflow_dispatch:
+ push:
+    branches:
+    - main
+
+permissions: 
+      id-token: write
+      contents: read
+
+jobs:
+  store_secrets:
+    runs-on: self-hosted
+    
+    permissions: 
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download Python Code From Github on Runner
+        uses: actions/checkout@v3
+      
+      - name: Retrieve Secret
+        id: secretdata
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+             method: approle
+             roleId: "8917e7bd-dc4f-6345-2155-09e6264c6a02"
+             secretId: "b4aa3f8f-20aa-e3c6-6d6f-0f1d97574d2e"
+             #url: "https://${{ secrets.VAULT_ADDR }}"
+             url: "http://vault.k8s.local"    
+             #namespace: "${{ secrets.VAULT_NAMESPACE }}"
+             namespace: "root"
+             
+             #caCertificate: ${{ secrets.VAULT_CACERT }}
+             #tlsSkipVerify: true
+             secrets: |
+                 mdeey/data/app/test username | username ;
+                 mdeey/data/app/test password | password 
+
+      - name: Print Secret
+        id: token
+        env:
+             USERNAME: ${{ steps.secretdata.outputs.username }}
+             PASSWORD: ${{ steps.secretdata.outputs.password }}
+        run: |
+             echo  $USERNAME >> /tmp/output.txt
+             echo  $PASSWORD >> /tmp/output.txt
+      
+      - name: 'upload artifact output.txt'
+        uses: actions/upload-artifact@v4
+        with:
+          name: output.txt
+          path: /tmp/output.txt
+
